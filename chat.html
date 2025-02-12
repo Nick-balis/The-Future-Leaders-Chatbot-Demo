@@ -113,6 +113,9 @@
     </div>
 
     <script>
+        // Backend API URL - CHANGE THIS WHEN DEPLOYING BACKEND
+        const backendUrl = "http://127.0.0.1:8000/chat"; // Change this when backend is hosted online
+
         // Get Elements
         const chatButton = document.getElementById("chat-button");
         const chatContainer = document.getElementById("chat-container");
@@ -136,18 +139,27 @@
             const userMessage = chatInput.value.trim();
             if (!userMessage) return;
 
+            // Display User Message in Chat
             chatBody.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
             chatInput.value = "";
 
-            const response = await fetch("http://127.0.0.1:8000/chat", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ user_id: "user123", message: userMessage })
-            });
+            try {
+                const response = await fetch(backendUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ user_id: "user123", message: userMessage })
+                });
 
-            const data = await response.json();
-            chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-            chatBody.scrollTop = chatBody.scrollHeight;
+                if (!response.ok) throw new Error("Server error");
+
+                const data = await response.json();
+                chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+                chatBody.scrollTop = chatBody.scrollHeight;
+
+            } catch (error) {
+                console.error("Error:", error);
+                chatBody.innerHTML += `<p><strong>Chatbot:</strong> Sorry, I couldn't reach the server.</p>`;
+            }
         });
 
     </script>
