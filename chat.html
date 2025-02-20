@@ -24,7 +24,7 @@
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
         }
 
-        /* Chat Window (Hidden by Default) */
+        /* Chat Window */
         #chat-container {
             display: none;
             position: fixed;
@@ -37,6 +37,8 @@
             border-radius: 10px;
             box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         /* Chat Header */
@@ -50,7 +52,6 @@
             position: relative;
         }
 
-        /* Close Button */
         #close-chat {
             position: absolute;
             right: 15px;
@@ -61,7 +62,7 @@
 
         /* Chat Body */
         #chat-body {
-            height: 80%;
+            flex-grow: 1;
             padding: 10px;
             overflow-y: auto;
             background-color: #f8f9fa;
@@ -90,14 +91,29 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
+        /* Chat Options */
+        .chat-options {
+            margin-top: 10px;
+        }
+
+        .chat-option-btn {
+            display: block;
+            width: 100%;
+            margin-top: 5px;
+            padding: 8px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+        }
     </style>
 </head>
 <body>
-
-    <!-- Floating Chat Button -->
     <button id="chat-button">💬</button>
 
-    <!-- Chat Window -->
     <div id="chat-container">
         <div id="chat-header">
             The Forge Chatbot
@@ -113,10 +129,8 @@
     </div>
 
     <script>
-        // Backend API URL - CHANGE THIS WHEN DEPLOYING BACKEND
-        const backendUrl = "https://4a4337dd-cdd6-4743-9009-969ea0a9f35b.repl.co/chat"; // Change this when backend is hosted online
+        const backendUrl = "https://4a4337dd-cdd6-4743-9009-969ea0a9f35b.repl.co/chat"; // Change when hosted online
 
-        // Get Elements
         const chatButton = document.getElementById("chat-button");
         const chatContainer = document.getElementById("chat-container");
         const closeChat = document.getElementById("close-chat");
@@ -124,45 +138,47 @@
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
 
-        // Show Chat Window
-        chatButton.addEventListener("click", () => {
-            chatContainer.style.display = "block";
-        });
+        chatButton.addEventListener("click", () => chatContainer.style.display = "block");
+        closeChat.addEventListener("click", () => chatContainer.style.display = "none");
 
-        // Close Chat Window
-        closeChat.addEventListener("click", () => {
-            chatContainer.style.display = "none";
-        });
+        function createChatOptions(options) {
+            const optionsContainer = document.createElement("div");
+            optionsContainer.classList.add("chat-options");
 
-        // Send Message to Backend
-        sendBtn.addEventListener("click", async () => {
-            const userMessage = chatInput.value.trim();
-            if (!userMessage) return;
+            options.forEach(option => {
+                const button = document.createElement("button");
+                button.classList.add("chat-option-btn");
+                button.textContent = option;
+                button.onclick = () => sendMessage(option);
+                optionsContainer.appendChild(button);
+            });
 
-            // Display User Message in Chat
-            chatBody.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+            return optionsContainer;
+        }
+
+        function sendMessage(message) {
+            if (!message) return;
+            chatBody.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
             chatInput.value = "";
 
-            try {
-                const response = await fetch(backendUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ user_id: "user123", message: userMessage })
-                });
-
-                if (!response.ok) throw new Error("Server error");
-
-                const data = await response.json();
+            fetch(backendUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: "user123", message: message })
+            })
+            .then(response => response.json())
+            .then(data => {
                 chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+                if (data.options) chatBody.appendChild(createChatOptions(data.options));
                 chatBody.scrollTop = chatBody.scrollHeight;
-
-            } catch (error) {
+            })
+            .catch(error => {
                 console.error("Error:", error);
                 chatBody.innerHTML += `<p><strong>Chatbot:</strong> Sorry, I couldn't reach the server.</p>`;
-            }
-        });
+            });
+        }
 
+        sendBtn.addEventListener("click", () => sendMessage(chatInput.value.trim()));
     </script>
-
 </body>
 </html>
