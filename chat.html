@@ -164,6 +164,7 @@
             fetch(backendUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
+                mode: "cors",  // Allow cross-origin requests
                 body: JSON.stringify({ user_id: "user123", message: message })
             })
             .then(response => response.json())
