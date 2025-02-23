@@ -173,8 +173,23 @@
                 chatBody.scrollTop = chatBody.scrollHeight;
             })
             .catch(error => {
-                console.error("Error:", error);
-                chatBody.innerHTML += `<p><strong>Chatbot:</strong> Sorry, I couldn't reach the server.</p>`;
+                console.error("❌ Chatbot Error:", error);
+            
+                // Display a more detailed error message in the chat
+                chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Oops! I couldn't connect to the server. Please check your internet connection or try again later.</p>`;
+            
+                // Show a retry button
+                const retryButton = document.createElement("button");
+                retryButton.textContent = "Retry";
+                retryButton.style.backgroundColor = "red";
+                retryButton.style.color = "white";
+                retryButton.style.padding = "8px";
+                retryButton.style.border = "none";
+                retryButton.style.borderRadius = "5px";
+                retryButton.style.cursor = "pointer";
+                retryButton.onclick = () => sendMessage(message); // Retry the last message
+            
+                chatBody.appendChild(retryButton);
             });
         }
 
