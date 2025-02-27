@@ -138,7 +138,27 @@
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
 
-        chatButton.addEventListener("click", () => chatContainer.style.display = "block");
+        chatButton.addEventListener("click", () => {
+            chatContainer.style.display = "block"; // Show the chat container
+        
+            // ✅ Send "Hello" automatically, but don't show it in chat
+            fetch(backendUrl, { 
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                mode: "cors",
+                body: JSON.stringify({ user_id: "user123", message: "Hello" })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // ✅ Only display chatbot's welcome message
+                chatBody.innerHTML = `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+                if (data.options) chatBody.appendChild(createChatOptions(data.options));
+                chatBody.scrollTop = chatBody.scrollHeight;
+            })
+            .catch(error => {
+                console.error("❌ Chatbot Error:", error);
+            });
+        });
         closeChat.addEventListener("click", () => chatContainer.style.display = "none");
 
         function createChatOptions(options) {
