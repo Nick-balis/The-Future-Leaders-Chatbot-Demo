@@ -138,7 +138,23 @@
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
 
-        let hasSentWelcomeMessage = false; // ✅ Ensures welcome message is sent only once
+        let hasSentWelcomeMessage = false;  // ✅ Ensures welcome message is sent only once
+
+        // ✅ Function to Create Chat Options
+        function createChatOptions(options) {
+            const optionsContainer = document.createElement("div");
+            optionsContainer.classList.add("chat-options");
+
+            options.forEach(option => {
+                const button = document.createElement("button");
+                button.classList.add("chat-option-btn");
+                button.textContent = option;
+                button.onclick = () => sendMessage(option);
+                optionsContainer.appendChild(button);
+            });
+
+            return optionsContainer;
+        }
 
         chatButton.addEventListener("click", () => {
             chatContainer.style.display = "block"; // ✅ Show chat window
@@ -163,6 +179,7 @@
                 })
                 .catch(error => {
                     console.error("❌ Chatbot Error:", error);
+                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error connecting to the chatbot. Try again later.</p>`;
                 });
             }
         });
@@ -172,21 +189,6 @@
             chatContainer.style.display = "none";
             hasSentWelcomeMessage = false; // ✅ Allows chatbot to reintroduce the welcome message on next open
         });
-
-        function createChatOptions(options) {
-            const optionsContainer = document.createElement("div");
-            optionsContainer.classList.add("chat-options");
-
-            options.forEach(option => {
-                const button = document.createElement("button");
-                button.classList.add("chat-option-btn");
-                button.textContent = option;
-                button.onclick = () => sendMessage(option);
-                optionsContainer.appendChild(button);
-            });
-
-            return optionsContainer;
-        }
 
         function sendMessage(message) {
             if (!message) return;
