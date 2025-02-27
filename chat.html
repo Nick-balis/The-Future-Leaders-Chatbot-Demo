@@ -138,6 +138,8 @@
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
 
+        let hasSentWelcomeMessage = false;  // ✅ Prevents duplicate welcome messages
+
         chatButton.addEventListener("click", () => {
             chatContainer.style.display = "block"; // ✅ Show the chat container
         
