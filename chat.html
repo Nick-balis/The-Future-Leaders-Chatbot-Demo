@@ -129,7 +129,7 @@
     </div>
 
     <script>
-        const backendUrl = "https://the-future-leaders-chatbot-backend-nickbalis21.replit.app/chat"; // Change when hosted online
+        const backendUrl = "https://the-future-leaders-chatbot-backend-nickbalis21.replit.app/chat"; // Ensure this is correct
 
         const chatButton = document.getElementById("chat-button");
         const chatContainer = document.getElementById("chat-container");
@@ -138,14 +138,14 @@
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
 
-        let hasSentWelcomeMessage = false;  // ✅ Prevents duplicate welcome messages
+        let hasSentWelcomeMessage = false; // ✅ Ensures welcome message is sent only once
 
         chatButton.addEventListener("click", () => {
-            chatContainer.style.display = "block"; // ✅ Show the chat container
-        
-            if (!hasSentWelcomeMessage) { // ✅ Prevents duplicate welcome messages
+            chatContainer.style.display = "block"; // ✅ Show chat window
+
+            if (!hasSentWelcomeMessage) { 
                 hasSentWelcomeMessage = true;
-        
+
                 fetch(backendUrl, { 
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -154,8 +154,8 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    chatBody.innerHTML = ""; // ✅ Clears previous messages before displaying
-        
+                    chatBody.innerHTML = ""; // ✅ Clears old messages on open
+
                     // ✅ Display chatbot's welcome message
                     chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
                     if (data.options) chatBody.appendChild(createChatOptions(data.options));
@@ -166,7 +166,12 @@
                 });
             }
         });
-        closeChat.addEventListener("click", () => chatContainer.style.display = "none");
+
+        // ✅ Close button also resets chat if needed
+        closeChat.addEventListener("click", () => {
+            chatContainer.style.display = "none";
+            hasSentWelcomeMessage = false; // ✅ Allows chatbot to reintroduce the welcome message on next open
+        });
 
         function createChatOptions(options) {
             const optionsContainer = document.createElement("div");
@@ -191,7 +196,7 @@
             fetch(backendUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                mode: "cors",  // Allow cross-origin requests
+                mode: "cors",
                 body: JSON.stringify({ user_id: "user123", message: message })
             })
             .then(response => response.json())
@@ -202,11 +207,9 @@
             })
             .catch(error => {
                 console.error("❌ Chatbot Error:", error);
-            
-                // Display a more detailed error message in the chat
                 chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Oops! I couldn't connect to the server. Please check your internet connection or try again later.</p>`;
-            
-                // Show a retry button
+                
+                // ✅ Retry button in case of failure
                 const retryButton = document.createElement("button");
                 retryButton.textContent = "Retry";
                 retryButton.style.backgroundColor = "red";
@@ -215,13 +218,14 @@
                 retryButton.style.border = "none";
                 retryButton.style.borderRadius = "5px";
                 retryButton.style.cursor = "pointer";
-                retryButton.onclick = () => sendMessage(message); // Retry the last message
+                retryButton.onclick = () => sendMessage(message);
             
                 chatBody.appendChild(retryButton);
             });
         }
 
         sendBtn.addEventListener("click", () => sendMessage(chatInput.value.trim()));
+
     </script>
 </body>
 </html>
