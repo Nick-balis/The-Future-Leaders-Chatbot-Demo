@@ -183,19 +183,7 @@
                     console.error("❌ Chatbot Fetch Error:", error);
                     chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
                 });
-                .then(response => response.json())
-                .then(data => {
-                    chatBody.innerHTML = ""; // ✅ Clears old messages on open
 
-                    // ✅ Display chatbot's welcome message
-                    chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-                    if (data.options) chatBody.appendChild(createChatOptions(data.options));
-                    chatBody.scrollTop = chatBody.scrollHeight;
-                })
-                .catch(error => {
-                    console.error("❌ Chatbot Error:", error);
-                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error connecting to the chatbot. Try again later.</p>`;
-                });
             }
         });
 
