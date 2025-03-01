@@ -160,12 +160,29 @@
             if (!hasSentWelcomeMessage) { 
                 hasSentWelcomeMessage = true;
 
-                fetch(backendUrl, { 
+                fetch(backendUrl, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     mode: "cors",
-                    body: JSON.stringify({ user_id: "user123", message: "Hello" })
+                    body: JSON.stringify({ user_id: "user123", message: message }) 
                 })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("✅ Received from backend:", data);  // ✅ Log the backend response in console
+                
+                    if (data.response) {
+                        chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+                    } else {
+                        chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Unexpected response from server.</p>`;
+                    }
+                
+                    if (data.options) chatBody.appendChild(createChatOptions(data.options));
+                    chatBody.scrollTop = chatBody.scrollHeight;
+                })
+                .catch(error => {
+                    console.error("❌ Chatbot Fetch Error:", error);
+                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
+                });
                 .then(response => response.json())
                 .then(data => {
                     chatBody.innerHTML = ""; // ✅ Clears old messages on open
