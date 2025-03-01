@@ -127,7 +127,7 @@
     </div>
 
     <script>
-        const backendUrl = "https://the-future-leaders-chatbot-backend-nickbalis21.replit.app/chat"; // Ensure this is correct
+        const backendUrl = "https://the-future-leaders-chatbot-backend-nickbalis21.replit.app/chat"; 
 
         const chatButton = document.getElementById("chat-button");
         const chatContainer = document.getElementById("chat-container");
@@ -135,14 +135,55 @@
         const chatBody = document.getElementById("chat-body");
         const chatInput = document.getElementById("chat-input");
         const sendBtn = document.getElementById("send-btn");
-
-        let hasSentWelcomeMessage = false;  // ✅ Ensures welcome message is sent only once
-
-        // ✅ Function to Create Chat Options
+        
+        // ✅ Generate or retrieve user_id from localStorage
+        let userId = localStorage.getItem("user_id");
+        if (!userId) {
+            userId = "user_" + Math.random().toString(36).substring(2, 12); // Generate unique ID
+            localStorage.setItem("user_id", userId);
+        }
+        
+        // ✅ Show chatbot & fetch welcome message every time
+        chatButton.addEventListener("click", () => {
+            chatContainer.style.display = "block"; // ✅ Show chat window
+            
+            fetch(backendUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                mode: "cors",
+                body: JSON.stringify({ user_id: userId }) // ✅ Send correct user_id
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("✅ Received from backend:", data);  // ✅ Log the backend response
+        
+                chatBody.innerHTML = ""; // ✅ Clear previous messages
+        
+                if (data.response) {
+                    chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+                } else {
+                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Unexpected response from server.</p>`;
+                }
+        
+                if (data.options) chatBody.appendChild(createChatOptions(data.options));
+                chatBody.scrollTop = chatBody.scrollHeight;
+            })
+            .catch(error => {
+                console.error("❌ Chatbot Fetch Error:", error);
+                chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
+            });
+        });
+        
+        // ✅ Close button resets chat
+        closeChat.addEventListener("click", () => {
+            chatContainer.style.display = "none";
+        });
+        
+        // ✅ Function to create chatbot options
         function createChatOptions(options) {
             const optionsContainer = document.createElement("div");
             optionsContainer.classList.add("chat-options");
-
+        
             options.forEach(option => {
                 const button = document.createElement("button");
                 button.classList.add("chat-option-btn");
@@ -150,59 +191,22 @@
                 button.onclick = () => sendMessage(option);
                 optionsContainer.appendChild(button);
             });
-
+        
             return optionsContainer;
         }
-
-        chatButton.addEventListener("click", () => {
-            chatContainer.style.display = "block"; // ✅ Show chat window
         
-            if (!hasSentWelcomeMessage) { 
-                hasSentWelcomeMessage = true;
-        
-                fetch(backendUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify({ user_id: "user123" }) // ✅ FIXED: No message; backend handles welcome
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("✅ Received from backend:", data);  // ✅ Log the backend response in console
-        
-                    if (data.response) {
-                        chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-                    } else {
-                        chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Unexpected response from server.</p>`;
-                    }
-        
-                    if (data.options) chatBody.appendChild(createChatOptions(data.options));
-                    chatBody.scrollTop = chatBody.scrollHeight;
-                })
-                .catch(error => {
-                    console.error("❌ Chatbot Fetch Error:", error);
-                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
-                });
-        
-            }
-        });
-
-        // ✅ Close button also resets chat if needed
-        closeChat.addEventListener("click", () => {
-            chatContainer.style.display = "none";
-            hasSentWelcomeMessage = false; // ✅ Allows chatbot to reintroduce the welcome message on next open
-        });
-
+        // ✅ Send message function
         function sendMessage(message) {
             if (!message) return;
+        
             chatBody.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
             chatInput.value = "";
-
+        
             fetch(backendUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 mode: "cors",
-                body: JSON.stringify({ user_id: "user123", message: message })
+                body: JSON.stringify({ user_id: userId, message: message }) // ✅ Send correct user_id
             })
             .then(response => response.json())
             .then(data => {
@@ -213,9 +217,14 @@
             .catch(error => {
                 console.error("❌ Chatbot Error:", error);
                 chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Oops! I couldn't connect to the server. Please check your internet connection or try again later.</p>`;
-                
+        
+                // ✅ Remove old retry button before adding a new one
+                const oldRetryButton = document.getElementById("retry-button");
+                if (oldRetryButton) oldRetryButton.remove();
+        
                 // ✅ Retry button in case of failure
                 const retryButton = document.createElement("button");
+                retryButton.id = "retry-button"; // ✅ Set ID to prevent duplicates
                 retryButton.textContent = "Retry";
                 retryButton.style.backgroundColor = "red";
                 retryButton.style.color = "white";
@@ -228,7 +237,13 @@
                 chatBody.appendChild(retryButton);
             });
         }
-
+        
+        // ✅ Allow sending messages with "Enter" key
+        chatInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") sendMessage(chatInput.value.trim());
+        });
+        
+        // ✅ Send button click event
         sendBtn.addEventListener("click", () => sendMessage(chatInput.value.trim()));
 
     </script>
