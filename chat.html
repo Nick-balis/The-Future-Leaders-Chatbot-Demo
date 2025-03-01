@@ -206,7 +206,7 @@
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 mode: "cors",
-                body: JSON.stringify({ user_id: userId, message: message }) // ✅ Send correct user_id
+                body: JSON.stringify({ user_id: userId, message: "Welcome" }) // ✅ Send correct user_id
             })
             .then(response => response.json())
             .then(data => {
