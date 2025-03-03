@@ -155,9 +155,9 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`): // Debugging: Log error status
+                    throw new Error(`HTTP error! Status: ${response.status}`); // Debugging: Log error status
                 }
-                    return response.json
+                    return response.json();
             })
             .then(data => {
                 console.log("✅ Received from backend:", data);  // ✅ Log the backend response
