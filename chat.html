@@ -153,7 +153,12 @@
                 mode: "cors",
                 body: JSON.stringify({ user_id: userId, message: "Welcome" }) // ✅ Send correct user_id
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`): // Debugging: Log error status
+                }
+                    return response.json
+            })
             .then(data => {
                 console.log("✅ Received from backend:", data);  // ✅ Log the backend response
         
