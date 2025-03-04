@@ -213,9 +213,24 @@
                 mode: "cors",
                 body: JSON.stringify({ user_id: userId, message: message }) // ✅ Send correct user_id
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log("✅ DEBUG: Received from backend:", data);
+
+                if (!data.response) {
+                    throw new Error("❌ ERROR: Backend response is missing 'response' field.");
+                }
                 chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
+            })
+            .chat(error => {
+                console.error("❌ Chatbot Fetch Error:", error);
+                chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
+            });
                 if (data.options) chatBody.appendChild(createChatOptions(data.options));
                 chatBody.scrollTop = chatBody.scrollHeight;
             })
