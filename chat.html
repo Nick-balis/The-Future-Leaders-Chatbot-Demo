@@ -126,9 +126,9 @@
         </div>
     </div>
 
-    <script>
+        <script>
         const backendUrl = "https://the-future-leaders-chatbot-backend-nickbalis21.replit.app/chat"; 
-
+    
         const chatButton = document.getElementById("chat-button");
         const chatContainer = document.getElementById("chat-container");
         const closeChat = document.getElementById("close-chat");
@@ -155,22 +155,24 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`); // Debugging: Log error status
+                    throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                    return response.json();
+                return response.json();
             })
             .then(data => {
-                console.log("✅ Received from backend:", data);  // ✅ Log the backend response
-        
+                console.log("✅ Received from backend:", data);  
+    
                 chatBody.innerHTML = ""; // ✅ Clear previous messages
-        
+    
                 if (data.response) {
                     chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
                 } else {
                     chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Unexpected response from server.</p>`;
                 }
-        
-                if (data.options) chatBody.appendChild(createChatOptions(data.options));
+    
+                if (data.options) {
+                    chatBody.appendChild(createChatOptions(data.options));
+                }
                 chatBody.scrollTop = chatBody.scrollHeight;
             })
             .catch(error => {
@@ -178,17 +180,17 @@
                 chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
             });
         });
-        
+    
         // ✅ Close button resets chat
         closeChat.addEventListener("click", () => {
             chatContainer.style.display = "none";
         });
-        
+    
         // ✅ Function to create chatbot options
         function createChatOptions(options) {
             const optionsContainer = document.createElement("div");
             optionsContainer.classList.add("chat-options");
-        
+    
             options.forEach(option => {
                 const button = document.createElement("button");
                 button.classList.add("chat-option-btn");
@@ -196,22 +198,22 @@
                 button.onclick = () => sendMessage(option);
                 optionsContainer.appendChild(button);
             });
-        
+    
             return optionsContainer;
         }
-        
+    
         // ✅ Send message function
         function sendMessage(message) {
             if (!message) return;
-        
+    
             chatBody.innerHTML += `<p><strong>You:</strong> ${message}</p>`;
             chatInput.value = "";
-        
+    
             fetch(backendUrl, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 mode: "cors",
-                body: JSON.stringify({ user_id: userId, message: message }) // ✅ Send correct user_id
+                body: JSON.stringify({ user_id: userId, message: message }) // ✅ Ensure correct user_id
             })
             .then(response => {
                 if (!response.ok) {
@@ -221,30 +223,30 @@
             })
             .then(data => {
                 console.log("✅ DEBUG: Received from backend:", data);
-
+    
                 if (!data.response) {
                     throw new Error("❌ ERROR: Backend response is missing 'response' field.");
                 }
+    
                 chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-            })
-            .chat(error => {
-                console.error("❌ Chatbot Fetch Error:", error);
-                chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
-            });
-                if (data.options) chatBody.appendChild(createChatOptions(data.options));
+    
+                if (data.options) {
+                    chatBody.appendChild(createChatOptions(data.options));
+                }
+    
                 chatBody.scrollTop = chatBody.scrollHeight;
             })
-            .catch(error => {
-                console.error("❌ Chatbot Error:", error);
+            .catch(error => {  
+                console.error("❌ Chatbot Fetch Error:", error);
                 chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Oops! I couldn't connect to the server. Please check your internet connection or try again later.</p>`;
-        
+    
                 // ✅ Remove old retry button before adding a new one
                 const oldRetryButton = document.getElementById("retry-button");
                 if (oldRetryButton) oldRetryButton.remove();
-        
+    
                 // ✅ Retry button in case of failure
                 const retryButton = document.createElement("button");
-                retryButton.id = "retry-button"; // ✅ Set ID to prevent duplicates
+                retryButton.id = "retry-button"; 
                 retryButton.textContent = "Retry";
                 retryButton.style.backgroundColor = "red";
                 retryButton.style.color = "white";
@@ -257,15 +259,15 @@
                 chatBody.appendChild(retryButton);
             });
         }
-        
+    
         // ✅ Allow sending messages with "Enter" key
         chatInput.addEventListener("keydown", (event) => {
             if (event.key === "Enter") sendMessage(chatInput.value.trim());
         });
-        
+    
         // ✅ Send button click event
         sendBtn.addEventListener("click", () => sendMessage(chatInput.value.trim()));
-
+    
     </script>
 </body>
 </html>
