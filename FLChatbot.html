@@ -145,7 +145,12 @@
         
         // ✅ Show chatbot & fetch welcome message every time
         chatButton.addEventListener("click", () => {
-            chatContainer.style.display = "none"; // ✅ Show chat window
+            if (chatContainer.style.display === "none" || chatContainer.style.display === "") {
+                chatContainer.style.display = "block"; // ✅ Open chatbot
+            } else {
+                chatContainer.style.display = "none"; // ✅ Close chatbot if clicked again
+            } 
+        });
     
             // ✅ Only fetch if chat is empty (avoids multiple requests)
             if (chatBody.innerHTML.trim() === "") {
