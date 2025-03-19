@@ -147,10 +147,6 @@
         chatButton.addEventListener("click", () => {
             if (chatContainer.style.display === "none" || chatContainer.style.display === "") {
                 chatContainer.style.display = "block"; // ✅ Open chatbot
-            } else {
-                chatContainer.style.display = "none"; // ✅ Close chatbot if clicked again
-            } 
-        });
     
                 // ✅ Only fetch if chat is empty (avoids multiple requests)
                 if (chatBody.innerHTML.trim() === "") {
@@ -176,7 +172,11 @@
                         chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server.</p>`;
                     });
                 }
-            });
+            } else {
+                chatContainer.style.display = "none";
+            } 
+        });
+        
     
         closeChat.addEventListener("click", () => chatContainer.style.display = "none");
 
