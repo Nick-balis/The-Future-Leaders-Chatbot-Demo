@@ -152,31 +152,31 @@
             } 
         });
     
-            // ✅ Only fetch if chat is empty (avoids multiple requests)
-            if (chatBody.innerHTML.trim() === "") {
-                fetch(backendUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    mode: "cors",
-                    body: JSON.stringify({ user_id: userId, message: "Welcome" }) 
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("✅ Received from backend:", data);
-                    
-                    chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response || "Unexpected error. Try again."}</p>`;
-                    
-                    if (data.options) {
-                        chatBody.appendChild(createChatOptions(data.options));
-                    }
-                    chatBody.scrollTop = chatBody.scrollHeight;
-                })
-                .catch(error => {
-                    console.error("❌ Chatbot Fetch Error:", error);
-                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server.</p>`;
-                });
-            }
-        });
+                // ✅ Only fetch if chat is empty (avoids multiple requests)
+                if (chatBody.innerHTML.trim() === "") {
+                    fetch(backendUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        mode: "cors",
+                        body: JSON.stringify({ user_id: userId, message: "Welcome" }) 
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("✅ Received from backend:", data);
+                        
+                        chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response || "Unexpected error. Try again."}</p>`;
+                        
+                        if (data.options) {
+                            chatBody.appendChild(createChatOptions(data.options));
+                        }
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                    })
+                    .catch(error => {
+                        console.error("❌ Chatbot Fetch Error:", error);
+                        chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server.</p>`;
+                    });
+                }
+            });
     
         closeChat.addEventListener("click", () => chatContainer.style.display = "none");
 
