@@ -146,39 +146,41 @@
         // ✅ Show chatbot & fetch welcome message every time
         chatButton.addEventListener("click", () => {
             chatContainer.style.display = "block"; // ✅ Show chat window
-            
-            fetch(backendUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                mode: "cors",
-                body: JSON.stringify({ user_id: userId, message: "Welcome" }) // ✅ Send correct user_id
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log("✅ Received from backend:", data);  
-    
-                chatBody.innerHTML = ""; // ✅ Clear previous messages
-    
-                if (data.response) {
-                    chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
-                } else {
-                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Unexpected response from server.</p>`;
-                }
-    
-                if (data.options) {
-                    chatBody.appendChild(createChatOptions(data.options));
-                }
-                chatBody.scrollTop = chatBody.scrollHeight;
-            })
-            .catch(error => {
-                console.error("❌ Chatbot Fetch Error:", error);
-                chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
-            });
+
+            // Only send a request if chatBody is empty (prevents re-sending requests)
+            if (chatBody.innerHTML.trim() === ""){
+                fetch(backendUrl, {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json" },
+                    mode: "cors",
+                    body: JSON.stringify({ user_id: userId, message: "Welcome" }) // Send correct user_id
+                })
+                .the(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json()
+                })
+                .then(data => {
+                    console.log("✅ Received from backend:", data);
+                    
+                    if (data.response) {
+                        chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`'
+                    } else {
+                        chatBody.innerHTML += `<p style="color: red;"><strong>:Chatbot;</strong> Unexpected response from server.</p>`;
+                    }
+
+                    if (data.options) {
+                        chatBody.appendChild(createChatOptions(data.options));
+                    }
+                    if (data.options) {
+                        chatBody.scrollTop= = chatBody.scrollHeight;
+                })
+                .catch(error => {
+                    console.error("❌ Chatbot Fetch Error:", error);
+                    chatBody.innerHTML += `<p style="color: red;"><strong>Chatbot:</strong> Error contacting server. Check console.</p>`;
+                });
+            }
         });
     
         // ✅ Close button resets chat
