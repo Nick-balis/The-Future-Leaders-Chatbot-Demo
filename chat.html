@@ -155,7 +155,7 @@
                     mode: "cors",
                     body: JSON.stringify({ user_id: userId, message: "Welcome" }) // Send correct user_id
                 })
-                .the(response => {
+                .then(response => {
                     if (!response.ok) {
                         throw new Error(`HTTP error! Status: ${response.status}`);
                     }
@@ -165,7 +165,7 @@
                     console.log("✅ Received from backend:", data);
                     
                     if (data.response) {
-                        chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`'
+                        chatBody.innerHTML += `<p><strong>Chatbot:</strong> ${data.response}</p>`;
                     } else {
                         chatBody.innerHTML += `<p style="color: red;"><strong>:Chatbot;</strong> Unexpected response from server.</p>`;
                     }
@@ -174,7 +174,7 @@
                         chatBody.appendChild(createChatOptions(data.options));
                     }
                     if (data.options) {
-                        chatBody.scrollTop= = chatBody.scrollHeight;
+                        chatBody.scrollTop = chatBody.scrollHeight;
                 })
                 .catch(error => {
                     console.error("❌ Chatbot Fetch Error:", error);
